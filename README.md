@@ -14,6 +14,7 @@ go run .
 
 | Method | Path | Description |
 | --- | --- | --- |
+| `GET` | `/healthz` | Service health check |
 | `GET` | `/items` | List all items, sorted by ID |
 | `POST` | `/items` | Add an item (`sku`, `name`, `quantity`) |
 | `GET` | `/items/{id}` | Fetch one item |
