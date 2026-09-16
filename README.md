@@ -17,6 +17,7 @@ go run .
 | `GET` | `/items` | List all items, sorted by ID |
 | `POST` | `/items` | Add an item (`sku`, `name`, `quantity`) |
 | `GET` | `/items/{id}` | Fetch one item |
+| GET | /healthz | Health check endpoint |
 
 ## Test
 

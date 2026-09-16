@@ -77,11 +77,16 @@ func NewServer(store *Store) *Server {
 	s.mux.HandleFunc("GET /items", s.listItems)
 	s.mux.HandleFunc("POST /items", s.addItem)
 	s.mux.HandleFunc("GET /items/{id}", s.getItem)
+	s.mux.HandleFunc("GET /healthz", s.healthz)
 	return s
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.mux.ServeHTTP(w, r)
+}
+
+func (s *Server) healthz(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
 func (s *Server) listItems(w http.ResponseWriter, _ *http.Request) {

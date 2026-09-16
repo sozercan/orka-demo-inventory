@@ -40,6 +40,24 @@ func TestAddAndListItems(t *testing.T) {
 	}
 }
 
+func TestHealthz(t *testing.T) {
+	ts := newTestServer(t)
+	resp, err := http.Get(ts.URL + "/healthz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("GET /healthz: got %d, want 200", resp.StatusCode)
+	}
+	var got map[string]string
+	if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
+		t.Fatal(err)
+	}
+	if got["status"] != "ok" {
+		t.Fatalf("GET /healthz: got %+v", got)
+	}
+}
+
 func TestGetUnknownItem(t *testing.T) {
 	ts := newTestServer(t)
 	resp, err := http.Get(ts.URL + "/items/42")
