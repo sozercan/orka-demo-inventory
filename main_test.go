@@ -40,6 +40,27 @@ func TestAddAndListItems(t *testing.T) {
 	}
 }
 
+func TestHealthz(t *testing.T) {
+	ts := newTestServer(t)
+	resp, err := http.Get(ts.URL + "/healthz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("GET /healthz: got %d, want 200", resp.StatusCode)
+	}
+	if got := resp.Header.Get("Content-Type"); got != "application/json" {
+		t.Fatalf("GET /healthz Content-Type: got %q, want %q", got, "application/json")
+	}
+	var body map[string]string
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		t.Fatal(err)
+	}
+	if body["status"] != "ok" {
+		t.Fatalf("GET /healthz: got %+v", body)
+	}
+}
+
 func TestGetUnknownItem(t *testing.T) {
 	ts := newTestServer(t)
 	resp, err := http.Get(ts.URL + "/items/42")
