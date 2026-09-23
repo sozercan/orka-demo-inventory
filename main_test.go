@@ -15,6 +15,45 @@ func newTestServer(t *testing.T) *httptest.Server {
 	return ts
 }
 
+func TestHealthz(t *testing.T) {
+	tests := []struct {
+		name       string
+		method     string
+		path       string
+		wantStatus int
+		wantBody   map[string]string
+	}{
+		{
+			name:       "ok",
+			method:     http.MethodGet,
+			path:       "/healthz",
+			wantStatus: http.StatusOK,
+			wantBody:   map[string]string{"status": "ok"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(tt.method, tt.path, nil)
+			rec := httptest.NewRecorder()
+
+			NewServer(NewStore()).ServeHTTP(rec, req)
+
+			resp := rec.Result()
+			if resp.StatusCode != tt.wantStatus {
+				t.Fatalf("%s %s: got %d, want %d", tt.method, tt.path, resp.StatusCode, tt.wantStatus)
+			}
+			var got map[string]string
+			if err := json.NewDecoder(resp.Body).Decode(&got); err != nil {
+				t.Fatal(err)
+			}
+			if got["status"] != tt.wantBody["status"] {
+				t.Fatalf("%s %s: got %+v, want %+v", tt.method, tt.path, got, tt.wantBody)
+			}
+		})
+	}
+}
+
 func TestAddAndListItems(t *testing.T) {
 	ts := newTestServer(t)
 
