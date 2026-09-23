@@ -7,7 +7,16 @@ export function createPaymentService(charge) {
     if (receipts.has(eventId)) {
       return receipts.get(eventId);
     }
-    const receipt = await charge(amount);
+
+    const receipt = Promise.resolve()
+      .then(() => charge(amount))
+      .catch(error => {
+        if (receipts.get(eventId) === receipt) {
+          receipts.delete(eventId);
+        }
+        throw error;
+      });
+
     receipts.set(eventId, receipt);
     return receipt;
   };
