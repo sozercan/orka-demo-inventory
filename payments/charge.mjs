@@ -3,12 +3,18 @@
 export function createPaymentService(charge) {
   const receipts = new Map();
 
-  return async function pay(eventId, amount) {
+  return function pay(eventId, amount) {
     if (receipts.has(eventId)) {
       return receipts.get(eventId);
     }
-    const receipt = await charge(amount);
+
+    const receipt = (async () => charge(amount))();
     receipts.set(eventId, receipt);
+    receipt.catch(() => {
+      if (receipts.get(eventId) === receipt) {
+        receipts.delete(eventId);
+      }
+    });
     return receipt;
   };
 }
