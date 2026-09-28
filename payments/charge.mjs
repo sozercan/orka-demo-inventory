@@ -8,7 +8,7 @@ export function createPaymentService(charge) {
       return receipts.get(eventId);
     }
     const receipt = await charge(amount);
-    receipts.set(eventId, receipt);
+    receipts.set(eventId, chargePromise);
     return receipt;
   };
 }
