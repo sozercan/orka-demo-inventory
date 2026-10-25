@@ -61,3 +61,14 @@ func TestAddRejectsMissingFields(t *testing.T) {
 		t.Fatalf("POST /items: got %d, want 400", resp.StatusCode)
 	}
 }
+
+func TestAddRejectsNegativeQuantity(t *testing.T) {
+	ts := newTestServer(t)
+	resp, err := http.Post(ts.URL+"/items", "application/json", strings.NewReader(`{"sku":"BOLT-M8","name":"M8 bolt","quantity":-5}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Fatalf("POST /items: got %d, want 400", resp.StatusCode)
+	}
+}
