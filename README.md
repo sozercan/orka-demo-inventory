@@ -15,7 +15,7 @@ go run .
 | Method | Path | Description |
 | --- | --- | --- |
 | `GET` | `/items` | List all items, sorted by ID |
-| `POST` | `/items` | Add an item (`sku`, `name`, `quantity`) |
+| `POST` | `/items` | Add an item (`sku`, `name`, `quantity`) - quantity must be non-negative |
 | `GET` | `/items/{id}` | Fetch one item |
 
 ## Test

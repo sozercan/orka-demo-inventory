@@ -89,43 +89,18 @@ func (s *Server) listItems(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (s *Server) addItem(w http.ResponseWriter, r *http.Request) {
-	var item Item
-	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid JSON"})
-		return
-	}
-	if item.SKU == "" || item.Name == "" {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "sku and name are required"})
-		return
-	}
-	writeJSON(w, http.StatusCreated, s.store.Add(item))
-}
-
-func (s *Server) getItem(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id"))
-	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
-		return
-	}
-	item, ok := s.store.Get(id)
-	if !ok {
-		writeJSON(w, http.StatusNotFound, map[string]string{"error": "not found"})
-		return
-	}
-	writeJSON(w, http.StatusOK, item)
-}
-
-func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(v)
-}
-
-func main() {
-	addr := os.Getenv("ADDR")
-	if addr == "" {
-		addr = ":8080"
-	}
-	log.Printf("inventory listening on %s", addr)
-	log.Fatal(http.ListenAndServe(addr, NewServer(NewStore())))
+    var item Item
+    if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+        writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid JSON"})
+        return
+    }
+    if item.SKU == "" || item.Name == "" {
+        writeJSON(w, http.StatusBadRequest, map[string]string{"error": "sku and name are required"})
+        return
+    }
+    if item.Quantity < 0 {
+        writeJSON(w, http.StatusBadRequest, map[string]string{"error": "quantity must be non-negative"})
+        return
+    }
+    writeJSON(w, http.StatusCreated, s.store.Add(item))
 }
