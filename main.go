@@ -98,6 +98,10 @@ func (s *Server) addItem(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "sku and name are required"})
 		return
 	}
+	if item.Quantity < 0 {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "quantity must be non-negative"})
+		return
+	}
 	writeJSON(w, http.StatusCreated, s.store.Add(item))
 }
 
